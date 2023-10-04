@@ -2,8 +2,6 @@ const db = require("../db/index");
 const { cloudinary } = require("../utils/cloudinary");
 const path = require("path");
 
-
-
 exports.createQuestions = async(req, res)=>{
     try {
         const {examYear, examType, subject, topic, options, answer, question} = req.body
