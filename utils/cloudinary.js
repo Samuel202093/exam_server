@@ -12,7 +12,7 @@ const upload = multer({
 })
 
 const checkFileType =(file, cb)=>{
-    const filetypes = /jpeg|jpg|png|gif|avif/
+    const filetypes = /jpeg|jpg|jfif|png|gif|avif/
     const extname = filetypes.test(path.extname(file.originalname).toLowerCase())
     const mimetype = filetypes.test(file.mimetype)
 

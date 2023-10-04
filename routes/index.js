@@ -10,7 +10,6 @@ const path = require('path')
 const route = express.Router()
 
 // route for user's controller
-
 route.post('/user', userController.createUser)
 route.post('/login', userController.loginUser)
 route.put('/user/:id', userController.updateUser)
@@ -18,7 +17,6 @@ route.put('/user/:id', userController.updateUser)
 
 
 //route for question controller
-route.get('/test', questionController.getTest)
 route.post('/question', upload.single('image'), questionController.createQuestions)
 route.get('/questions', questionController.getQuestions)
 route.delete('/question/:id', questionController.deleteExamQuestion)

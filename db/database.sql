@@ -6,38 +6,23 @@ CREATE TABLE users(
     userPassword TEXT NOT NULL
 );
 
-CREATE TABLE exam_questions(
-    id BIGSERIAL NOT NULL PRIMARY KEY,
-    exam_year NUMERIC NOT NULL,
-    exam_type VARCHAR(100) NOT NULL,
-    exam_subject VARCHAR(200) NOT NULL,
-    topic VARCHAR(200) NOT NULL,
-    question VARCHAR NOT NULL,
-    imgUrl VARCHAR,
-    options JSON NOT NULL,
-    solution VARCHAR NOT NULL
-);
-
 CREATE TABLE question_type(
     id BIGSERIAL NOT NULL PRIMARY KEY,
-    exam_type VARCHAR 
+    exam_type VARCHAR NOT NULL
 );
 
-CREATE TABLE question_subject(
+CREATE TABLE question_subjectTopic (
     id BIGSERIAL NOT NULL PRIMARY KEY,
-    exam_subject VARCHAR 
+    type_id BIGINT NOT NULL REFERENCES question_type(id) ON UPDATE CASCADE ON DELETE CASCADE,
+    exam_subject VARCHAR NOT NULL,
+    exam_topic VARCHAR NOT NULL
 );
 
-CREATE TABLE question_topic(
-    id BIGSERIAL NOT NULL PRIMARY KEY,
-    topic VARCHAR 
-);
 
 CREATE TABLE questions(
     id BIGSERIAL NOT NULL PRIMARY KEY,
     type_id BIGINT NOT NULL REFERENCES question_type(id) ON UPDATE CASCADE ON DELETE CASCADE,
-    subject_id BIGINT NOT NULL REFERENCES question_subject(id) ON UPDATE CASCADE ON DELETE CASCADE,
-    topic_id BIGINT NOT NULL REFERENCES question_topic(id) ON UPDATE CASCADE ON DELETE CASCADE, 
+    subjectTopic_id BIGINT NOT NULL REFERENCES question_subjectTopic(id) ON UPDATE CASCADE ON DELETE CASCADE, 
     exam_year NUMERIC NOT NULL, 
     imgUrl VARCHAR, 
     exam_questions VARCHAR NOT NULL,
