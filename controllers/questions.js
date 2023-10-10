@@ -9,10 +9,7 @@ exports.createQuestions = async(req, res)=>{
         if (!req.file) {
             let typeTableResult = await db.query("INSERT INTO question_type(exam_type) VALUES($1) RETURNING id",[examType])
             const transformTypeResult = typeTableResult.rows.map((x)=>{ return x.id})
-            console.log(`transformTypeResult is ${transformTypeResult} and ${typeof transformTypeResult}`)
             const numTypeResult = Number(Object.values(transformTypeResult))
-            console.log(`numTypeResult is ${numTypeResult} and ${typeof numTypeResult}`)
-
 
             let subjectTopicTableResult = await db.query("INSERT INTO question_subjectTopic(type_id, exam_subject, exam_topic) VALUES($1, $2, $3) RETURNING id",[numTypeResult, subject, topic])
             const transformSubjectTopicResult = subjectTopicTableResult.rows.map((x)=>{ return x.id})
