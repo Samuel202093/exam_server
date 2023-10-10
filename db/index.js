@@ -1,8 +1,14 @@
 const { Pool } = require('pg')
  
+
+ //connecting to neon-postgres-db
+ 
 const pool = new Pool({
-    connectionString: process.env.POSTGRES_URL + "?sslmode=require",
-  }) //connects to postgres
+    connectionString: process.env.POSTGRES_URL,
+    ssl:{
+      rejectUnauthorized:false
+    },
+  })
 
   pool.connect((err)=>{
     if (err){

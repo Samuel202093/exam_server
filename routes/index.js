@@ -13,6 +13,7 @@ const route = express.Router()
 route.post('/user', userController.createUser)
 route.post('/login', userController.loginUser)
 route.put('/user/:id', userController.updateUser)
+route.get('/test', userController.testUser)
 
 
 

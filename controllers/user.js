@@ -13,6 +13,14 @@ function encrypt(text) {
   return encrypted.toString("hex");
 }
 
+exports.testUser = async(req, res)=>{
+  try {
+    res.status(200).send("welcome to exam-server")
+  } catch (error) {
+    res.status(500).send({error:error.message || "server error"})
+  }
+}
+
 exports.createUser = async (req, res) => {
   try {
     let { firstname, lastname, email, password } = req.body;
