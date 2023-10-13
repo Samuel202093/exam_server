@@ -1,6 +1,9 @@
 const db = require("../db/index");
 const dotenv = require("dotenv");
 const crypto = require("crypto");
+// const userLogin = require("../utils/data")
+const userLogin = require('../utils/data')
+
 
 const algorithm = "aes-256-cbc";
 const key = crypto.randomBytes(32);
@@ -16,6 +19,21 @@ function encrypt(text) {
 exports.testUser = async(req, res)=>{
   try {
     res.status(200).send("welcome to exam-server")
+  } catch (error) {
+    res.status(500).send({error:error.message || "server error"})
+  }
+}
+
+exports.loginAdmins = (req, res)=>{
+  try {
+    const { email, password } = req.body
+    // res.status(200).send(userLogin)
+    const result =  userLogin.find((x)=> x.email === email && x.password === password)
+    if (result) {
+      res.status(200).send(result)
+    }else{
+      res.status(400).send('cannot get user details')
+    }
   } catch (error) {
     res.status(500).send({error:error.message || "server error"})
   }
@@ -37,6 +55,7 @@ exports.createUser = async (req, res) => {
   }
 };
 
+
 exports.loginUser = async (req, res) => {
   try {
     let { email, password } = req.body;
@@ -54,6 +73,8 @@ exports.loginUser = async (req, res) => {
     res.status(500).send({ error: error.message || "server error" });
   }
 };
+
+
 
 exports.updateUser = async (req, res) => {
   try {

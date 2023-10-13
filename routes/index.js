@@ -11,6 +11,7 @@ const route = express.Router()
 
 // route for user's controller
 route.post('/user', userController.createUser)
+route.post('/login/admin', userController.loginAdmins)
 route.post('/login', userController.loginUser)
 route.put('/user/:id', userController.updateUser)
 route.get('/test', userController.testUser)
