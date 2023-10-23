@@ -1,98 +1,46 @@
+const { promisify } = require('util')
 const db = require("../db/index");
-const dotenv = require("dotenv");
+const dotenv = require("dotenv").config();
+const bcrypt = require('bcryptjs')
+const catchAsync = require('../utils/catchAsync')
+const AppError = require("../utils/appError")
 const crypto = require("crypto");
-// const userLogin = require("../utils/data")
-const userLogin = require('../utils/data')
+const jwt = require('jsonwebtoken')
 
 
-const algorithm = "aes-256-cbc";
-const key = crypto.randomBytes(32);
-const iv = crypto.randomBytes(16);
-
-function encrypt(text) {
-  let cipher = crypto.createCipheriv(algorithm, Buffer.from(key), iv);
-  let encrypted = cipher.update(text);
-  encrypted = Buffer.concat([encrypted, cipher.final()]);
-  return encrypted.toString("hex");
+const signToken = (id)=>{
+  return jwt.sign( { id }, process.env.JWT_SECRET, {expiresIn: process.env.JWT_EXPIRY_DATE})
 }
 
-exports.testUser = async(req, res)=>{
-  try {
-    res.status(200).send("welcome to exam-server")
-  } catch (error) {
-    res.status(500).send({error:error.message || "server error"})
+
+
+exports.signUp = catchAsync(async(req, res, next)=>{
+  let { email, password} = req.body
+  let hashPassword = await bcrypt.hash(password, 12)
+  password = hashPassword
+
+  const result = await db.query("INSERT INTO users (email, userPassword) VALUES($1, $2) RETURNING *",[email, password])
+
+  const token = signToken(result.rows[0].id)
+
+  res.status(201).json({status: "success", token, data:{user: result.rows}})
+})
+
+
+exports.login = catchAsync(async(req, res, next)=>{
+  const {email, password} =  req.body
+  if (!email || !password) {
+   return next(new AppError("Please Enter email and password details", 400))
   }
-}
 
-exports.loginAdmins = (req, res)=>{
-  try {
-    const { email, password } = req.body
-    // res.status(200).send(userLogin)
-    const result =  userLogin.find((x)=> x.email === email && x.password === password)
-    if (result) {
-      res.status(200).send(result)
-    }else{
-      res.status(400).send('cannot get user details')
-    }
-  } catch (error) {
-    res.status(500).send({error:error.message || "server error"})
+  const result = await db.query("SELECT * FROM users WHERE email = $1", [email])
+
+  if (!result.rows || !(await bcrypt.compare(password, result.rows[0].userpassword))) {
+    return next(new AppError("Incorrect email or password", 401))
   }
-}
 
-exports.createUser = async (req, res) => {
-  try {
-    let { firstname, lastname, email, password } = req.body;
-    let pass = encrypt(password);
-    password = pass;
+  const token = signToken(result.rows[0].id)
 
-    const result = await db.query(
-      "INSERT INTO users (firstname, lastname, email, userPassword) values($1, $2, $3, $4) returning *",
-      [firstname, lastname, email, password]
-    );
-    res.status(200).send(result.rows);
-  } catch (error) {
-    res.status(500).send({ error: error.message || "server error" });
-  }
-};
+  res.status(200).json({status: "success", token})
+})
 
-
-exports.loginUser = async (req, res) => {
-  try {
-    let { email, password } = req.body;
-    const result = await db.query("SELECT * FROM users WHERE email = $1", [
-      email,
-    ]);
-    const dbUserpassword = result.rows[0].userpassword;
-    let pass = encrypt(password);
-    password = pass;
-    console.log(`reqBodyPassword:${password}`);
-    if (dbUserpassword == password) {
-      res.status(200).send(result.rows);
-    }
-  } catch (error) {
-    res.status(500).send({ error: error.message || "server error" });
-  }
-};
-
-
-
-exports.updateUser = async (req, res) => {
-  try {
-    let { firstname, lastname, password } = req.body;
-
-    let pass = encrypt(password);
-    password = pass;
-
-    const result = await db.query(
-      "UPDATE users SET firstname = $1, lastname = $2, userPassword = $3 WHERE id = $4 returning *",
-      [firstname, lastname, password, req.params.id]
-    );
-    if (result) {
-      res.status(200).send(result.rows);
-    } else {
-      res.status(400).send("cannot update user's credentials");
-    }
-  } catch (error) {
-    res.status(500).send({ error: error.message || "server error" });
-  }
-};

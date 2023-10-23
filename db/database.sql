@@ -1,10 +1,12 @@
+CREATE TYPE roles AS ENUM ('user', 'admin');
+
 CREATE TABLE users(
     id BIGSERIAL NOT NULL PRIMARY KEY,
-    firstname VARCHAR(15) NOT NULL,
-    lastname VARCHAR(15) NOT NULL,
     email TEXT NOT NULL UNIQUE,
-    userPassword TEXT NOT NULL
+    userPassword TEXT NOT NULL,
+    position roles DEFAULT 'user'
 );
+
 
 CREATE TABLE question_type(
     id BIGSERIAL NOT NULL PRIMARY KEY,

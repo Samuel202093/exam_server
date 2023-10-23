@@ -1,5 +1,7 @@
 Api documentation for exam-server backend
 
+eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjEyIiwiaWF0IjoxNjk3ODEwODg5LCJleHAiOjE3MDI5OTQ4ODl9.ZyLByq_1i1w9Ikzs965TipGB8kLb-txm4Zss2BqI2fw
+
 1. To create a user
 method: POST
 api: https://exams-server.onrender.com/user
