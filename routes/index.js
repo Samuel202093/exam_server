@@ -17,13 +17,13 @@ route.post('/login', userController.login)
 
 
 //route for question controller
-route.post('/question', upload.single('image'), authController.protect, questionController.createQuestions)
+route.post('/question', authController.protect, upload.single('image'), questionController.createQuestions)
 route.get('/questions', questionController.getQuestions)
 route.delete('/question/:id', authController.protect, authController.restrictedTo('admin', 'team-lead'), questionController.deleteExamQuestion)
 route.get('/question/type', questionController.getByExamType)
 route.get('/question/subject', questionController.getQuestionBySubject)
 route.get('/question/topic', questionController.getQuestionByTopic)
-route.put('/question/:id', upload.single('image'), authController.protect, questionController.updateQuestion)
+route.put('/question/:id', authController.protect, upload.single('image'), questionController.updateQuestion)
 route.put('/question/:subject/:topic', authController.protect, questionController.updateByTopic)
 route.delete('/question/:subject/:topic', authController.protect, authController.restrictedTo('admin', 'team-lead'), questionController.deleteByTopic)
 
