@@ -1,2 +1,2 @@
 # exam_server
-Server side code for uploading examination question. Built with nodejs and postgresql database
+Server side code for uploading examination questions. Built with Nodejs, Express and Postgresql database
