@@ -33,6 +33,35 @@ CREATE TABLE questions(
 );
 
 
+CREATE TABLE test_type(
+    id BIGSERIAL NOT NULL PRIMARY KEY,
+    exam_type VARCHAR(100) NOT NULL
+);
+
+CREATE TABLE test_subject(
+    id BIGSERIAL NOT NULL PRIMARY KEY,
+    exam_subject VARCHAR(100) NOT NULL,
+    exam_topic VARCHAR(255) NOT NULL
+);
+
+
+CREATE TABLE test_questions(
+    id BIGSERIAL NOT NULL PRIMARY KEY,
+    type_id BIGINT NOT NULL REFERENCES test_type(id) ON UPDATE CASCADE ON DELETE CASCADE,
+    subjectTopic_id BIGINT NOT NULL REFERENCES test_subject(id) ON UPDATE CASCADE ON DELETE CASCADE, 
+    exam_year NUMERIC NOT NULL, 
+    imgUrl VARCHAR, 
+    exam_questions VARCHAR NOT NULL,
+    options JSON NOT NULL,
+    solution VARCHAR NOT NULL
+);
+
+
+
+
+
+
+
 
 
 

@@ -1,30 +1,90 @@
-const express = require('express')
-const dotenv = require('dotenv').config()
-const userController = require('../controllers/user')
-const authController = require('../controllers/auth')
-const questionController = require('../controllers/questions')
-const {upload} = require('../utils/cloudinary')
-const path = require('path')
+const express = require("express");
+const dotenv = require("dotenv").config();
+const userController = require("../controllers/user");
+const { isLoggedIn, isSuspended, restrictedTo } = require("../controllers/auth");
+// const questionController = require("../controllers/questions");
+const {
+  createExamType,
+  createTopicSubject,
+  createQuestion,
+  getQuestions,
+  QuestionBySubject,
+  questionByExamType,
+  questionByTopic,
+  deleteQuestion,
+  getQuestion,
+  updateQuestion,
+  updateByTopic,
+  deleteByTopic,
+  updateBySubject,
+  deleteBySubject,
+} = require("../controllers/exams");
+const { upload } = require("../utils/cloudinary");
+const path = require("path");
+
+const route = express.Router();
 
 
 
-const route = express.Router()
 
-// route for user's controller
-route.post('/signup', userController.signUp)
-route.post('/login', userController.login)
+//   <========================================= user controller ====================================================>
+
+route.post("/signup", restrictedTo("admin"), userController.signUp);
+route.post("/login", userController.login);
+route.get("/adminProfile/:id", restrictedTo("admin"), userController.getAdmin);
+route.patch(
+  "/password/:id",
+  isLoggedIn,
+  restrictedTo("admin"),
+  userController.changePassword
+);
+route.patch(
+  "/suspend/:id",
+  isLoggedIn,
+  restrictedTo("admin"),
+  userController.suspendAdmin
+);
+route.patch(
+  "/unsuspend/:id",
+  isLoggedIn,
+  restrictedTo("admin"),
+  userController.unSuspendAdmin
+);
+route.delete(
+  "/adminProfile/:id",
+  restrictedTo("admin"),
+  userController.deleteAdmin
+);
 
 
 
-//route for question controller
-route.post('/question', authController.protect, upload.single('image'), questionController.createQuestions)
-route.get('/questions', questionController.getQuestions)
-route.delete('/question/:id', authController.protect, authController.restrictedTo('admin', 'team-lead'), questionController.deleteExamQuestion)
-route.get('/question/type', questionController.getByExamType)
-route.get('/question/subject', questionController.getQuestionBySubject)
-route.get('/question/topic', questionController.getQuestionByTopic)
-route.put('/question/:id', authController.protect, upload.single('image'), questionController.updateQuestion)
-route.put('/question/:subject/:topic', authController.protect, questionController.updateByTopic)
-route.delete('/question/:subject/:topic', authController.protect, authController.restrictedTo('admin', 'team-lead'), questionController.deleteByTopic)
 
-module.exports = route
+//   <========================================= Exams controller ====================================================>
+
+route.post("/examType", isLoggedIn, restrictedTo("admin"), createExamType);
+route.post(
+  "/subject/topic",
+  isLoggedIn,
+  restrictedTo("admin"),
+  createTopicSubject
+);
+route.post("/question", isLoggedIn, isSuspended, upload.single("image"), createQuestion);
+route.get("/questions", getQuestions);
+route.get("/question/:id", getQuestion);
+route.get("/question_subject", QuestionBySubject);
+route.get("/question_type", questionByExamType);
+route.get("/question_topic", questionByTopic);
+route.put("/question/:id", isLoggedIn, isSuspended, upload.single("image"), updateQuestion);
+route.put("/subject/:topic", isLoggedIn, restrictedTo("admin"), updateByTopic);
+route.put("/:subject", isLoggedIn, restrictedTo("admin"), updateBySubject);
+route.delete("/question/:id", isLoggedIn, restrictedTo("admin"), deleteQuestion);
+route.delete("/:topic", isLoggedIn, restrictedTo("admin"), deleteByTopic);
+route.delete(
+  "/question_subject/:subject",
+  isLoggedIn,
+  restrictedTo("admin"),
+  deleteBySubject
+);
+
+
+module.exports = route;

@@ -7,7 +7,6 @@ const routes = require('./routes/index')
 const AppError = require('./utils/appError')
 const globalErrorHandler = require('./controllers/error')
 const dotenv = require('dotenv').config()
-// const hpp = require('hpp')
 const rateLimit = require('express-rate-limit')
 const PORT = 6000 || process.env.PORT
 
@@ -32,15 +31,13 @@ app.use(bodyParser.json())
 // Data sanitazation against cross-scripting(XSS) attack 
 app.use(xss())
 
-// prevents parameter pollution
-// app.use(hpp())/
 
 // middleware 
 app.use((req, res, next)=>{
     next()
 })
 
-app.use('/', routes)
+app.use('/api/v1', routes)
 app.all("*", (req, res, next)=>{
     next(new AppError(`cannot find ${req.originalUrl} on this server!`, 404))
 })
