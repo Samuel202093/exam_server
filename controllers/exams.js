@@ -142,12 +142,21 @@ exports.questionByTopic = catchAsync(async(req, res, next)=>{
 })
 
 
-exports.deleteQuestion = catchAsync(async(req, res, next)=>{
+exports.deleteQuestionById = catchAsync(async(req, res, next)=>{
     const questionId = req.params.id
     const checkQuestion = await knex("exam_questions").where({id: questionId})
 
     if (!checkQuestion) {
         return next(new AppError("question does not exist!!!", 401))
+    }
+
+
+    if (!checkQuestion[0].cloudinary_id) {
+        await knex('exam_questions').where({id: questionId}).del()
+        res.status(204).json({
+            status: "success",
+            data: "question deleted successfully"
+        })
     }
 
     if (checkQuestion[0].cloudinary_id) {
@@ -158,6 +167,8 @@ exports.deleteQuestion = catchAsync(async(req, res, next)=>{
             data: "question deleted successfully"
         })
     }
+
+   
 })
 
 

@@ -11,7 +11,7 @@ const {
   QuestionBySubject,
   questionByExamType,
   questionByTopic,
-  deleteQuestion,
+  deleteQuestionById,
   getQuestion,
   updateQuestion,
   updateByTopic,
@@ -77,7 +77,7 @@ route.get("/question_topic", questionByTopic);
 route.put("/question/:id", isLoggedIn, isSuspended, upload.single("image"), updateQuestion);
 route.put("/subject/:topic", isLoggedIn, restrictedTo("admin"), updateByTopic);
 route.put("/:subject", isLoggedIn, restrictedTo("admin"), updateBySubject);
-route.delete("/question/:id", isLoggedIn, restrictedTo("admin"), deleteQuestion);
+route.delete("/question/:id", isLoggedIn, restrictedTo("admin"), deleteQuestionById);
 route.delete("/:topic", isLoggedIn, restrictedTo("admin"), deleteByTopic);
 route.delete(
   "/question_subject/:subject",
