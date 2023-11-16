@@ -22,7 +22,9 @@ const signToken = (id)=>{
         return next(new AppError("Please Enter email and password details", 400))
        }
      
-       const result = await knex.select('id','password','role').from('admins').where('email',email)
+       const result = await knex.select().from('admins').where('email',email)
+
+       console.log(result)
        
        if (!result[0] || !(await bcrypt.compare(password, result[0].password))) {
          return next(new AppError("Incorrect email or password", 401))
@@ -35,7 +37,7 @@ const signToken = (id)=>{
        if (result[0].role === 'admin') {
         const token = signToken(result[0].id)
 
-        res.status(200).json({status: "success", token})
+        res.status(200).json({status: "success", token, data: result[0]})
        }
 
        

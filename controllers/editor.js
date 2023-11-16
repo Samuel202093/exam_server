@@ -21,7 +21,7 @@ exports.loginEditor = catchAsync(async(req, res, next)=>{
    return next(new AppError("Please Enter email and password details", 400))
   }
 
-  const result = await knex.select('id','password').from('admins').where('email',email)
+  const result = await knex.select().from('admins').where('email',email)
   
   if (!result[0] || !(await bcrypt.compare(password, result[0].password))) {
     return next(new AppError("Incorrect email or password", 401))
@@ -29,7 +29,7 @@ exports.loginEditor = catchAsync(async(req, res, next)=>{
 
   const token = signToken(result[0].id)
 
-  res.status(200).json({status: "success", token})
+  res.status(200).json({status: "success", token, data: result[0]})
 })
 
 
