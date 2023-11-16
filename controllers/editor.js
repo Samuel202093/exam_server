@@ -15,20 +15,7 @@ const signToken = (id)=>{
 
 
 
-// exports.signUp = catchAsync(async(req, res, next)=>{
-//   let {firstname, lastname, email, password} = req.body
-//   let hashPassword = await bcrypt.hash(password, 12)
-//   password = hashPassword
-
-//   const result = await knex.raw("INSERT INTO admins (first_name, last_name, email, password) VALUES(?, ?, ?, ?) RETURNING *",[firstname, lastname, email, password])
-
-//   const token = signToken(result.rows[0].id)
-
-//   res.status(201).json({status: "success", token, data:{user: result.rows}})
-// })
-
-
-exports.login = catchAsync(async(req, res, next)=>{
+exports.loginEditor = catchAsync(async(req, res, next)=>{
   const {email, password} =  req.body
   if (!email || !password) {
    return next(new AppError("Please Enter email and password details", 400))
@@ -46,85 +33,4 @@ exports.login = catchAsync(async(req, res, next)=>{
 })
 
 
-
-// exports.changePassword = catchAsync(async(req, res, next)=>{
-//   const adminId = Number(req.params.id)
-//   const result = await knex.select().from('admins').where('id', adminId)
-
-//   const hashPassword = await bcrypt.hash(req.body.password, 12)
-
-//   if (!result[0]) {
-//     return next(new AppError("Admin does not exist!!!", 401))
-//   }
- 
-//     const updatedPassword = await knex('admins').where({id: adminId}).update({password:hashPassword},"*")
-
-//     res.status(201).json({
-//       status: "success",
-//       data: updatedPassword
-//     })
-
-// })
-
-
-// exports.suspendAdmin = catchAsync(async(req, res, next)=>{
-//   const adminId = Number(req.params.id)
-//   const result = await knex.select().from('admins').where('id', adminId)
-//   if (!result) {
-//     return next(new AppError("Admin does not exist!!!", 401))
-//   }
-//   const updatedStatus = await knex('admins').where({id:adminId}).update({status: 'suspended'}, "*")
-
-//   res.status(201).json({
-//     status: "success",
-//     data: updatedStatus
-//   })
-// })
-
-
-// exports.getAdmin = catchAsync(async(req, res, next)=>{
-//   const adminId = Number(req.params.id)
-
-//   const result = await knex.select().from('admins').where({id:adminId})
-//   if (!result) {
-//     return next(new AppError("Admin does not exist!!!", 401))
-//   }
-
-//   res.status(200).json({
-//     status: "success",
-//     data: result
-//   })
-// })
-
-
-// exports.unSuspendAdmin = catchAsync(async(req, res, next)=>{
-//   const adminId = Number(req.params.id)
-//   const result = await knex.select().from('admins').where('id', adminId)
-//   if (!result) {
-//     return next(new AppError("Admin does not exist!!!", 401))
-//   }
-//   const updatedStatus = await knex('admins').where({id:adminId}).update({status: 'active'}, "*")
-
-//   res.status(201).json({
-//     status: "success",
-//     data: updatedStatus
-//   })
-
-// })
-
-
-// exports.deleteAdmin = catchAsync(async(req, res, next)=>{
-//   const adminId = Number(req.params.id)
-//   const result = await knex.select().from('admins').where({id : adminId })
-//   if (!result) {
-//     return next(new AppError("Admin does not exist!!!", 401))
-//   }
-
-//   const deletedAdmin = await knex('admins').where({id: adminId}).del()
-  
-//   res.status(204).json({
-//     status: "success",
-//     data: deletedAdmin
-//   })
-// })
 

@@ -1,6 +1,6 @@
 const express = require("express");
 const dotenv = require("dotenv").config();
-const { login } = require("../controllers/editor");
+const { loginEditor } = require("../controllers/editor");
 const { isLoggedIn, isSuspended, restrictedTo } = require("../controllers/auth");
 const { signUpEditor, loginAdmin, suspendEditor, unSuspendEditor, deleteEditor, changeEditorPassword} = require('../controllers/admin')
 // const questionController = require("../controllers/questions");
@@ -27,47 +27,23 @@ const route = express.Router();
 
 
 
-//   <========================================= admin controller ====================================================>
+//   <========================================= Admin controller ====================================================>
 
 route.post("/signup", restrictedTo("admin"), signUpEditor)
 route.post("/login/admin", loginAdmin)
 route.patch("/password/:id", isLoggedIn, restrictedTo("admin"), changeEditorPassword)
 route.patch("/suspend/:id", isLoggedIn, restrictedTo("admin"), suspendEditor)
 route.patch("/unsuspend/:id", isLoggedIn, restrictedTo("admin"), unSuspendEditor)
-route.delete( "/adminProfile/:id", restrictedTo("admin"), deleteEditor)
+route.delete( "/adminProfile/:id", isLoggedIn, restrictedTo("admin"), deleteEditor)
 
 
 
 
 
-//   <========================================= user controller ====================================================>
+//   <========================================= Editor controller ====================================================>
 
-// route.post("/signup", restrictedTo("admin"), userController.signUp);
-route.post("/login", login);
-// route.get("/adminProfile/:id", restrictedTo("admin"), userController.getAdmin);
-// route.patch(
-//   "/password/:id",
-//   isLoggedIn,
-//   restrictedTo("admin"),
-//   userController.changePassword
-// );
-// route.patch(
-//   "/suspend/:id",
-//   isLoggedIn,
-//   restrictedTo("admin"),
-//   userController.suspendAdmin
-// );
-// route.patch(
-//   "/unsuspend/:id",
-//   isLoggedIn,
-//   restrictedTo("admin"),
-//   userController.unSuspendAdmin
-// );
-// route.delete(
-//   "/adminProfile/:id",
-//   restrictedTo("admin"),
-//   userController.deleteAdmin
-// );
+route.post("/login", loginEditor);
+
 
 
 
