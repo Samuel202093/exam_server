@@ -22,15 +22,23 @@ const signToken = (id)=>{
         return next(new AppError("Please Enter email and password details", 400))
        }
      
-       const result = await knex.select('id','password').from('admins').where('email',email)
+       const result = await knex.select('id','password','role').from('admins').where('email',email)
        
        if (!result[0] || !(await bcrypt.compare(password, result[0].password))) {
          return next(new AppError("Incorrect email or password", 401))
        }
 
-       const token = signToken(result[0].id)
+       if (result[0].role !== 'admin') {
+        return next(new AppError("Permission denied!!!!!!", 403))
+       }
 
-       res.status(200).json({status: "success", token})
+       if (result[0].role === 'admin') {
+        const token = signToken(result[0].id)
+
+        res.status(200).json({status: "success", token})
+       }
+
+       
   })
 
 
@@ -117,7 +125,7 @@ const signToken = (id)=>{
     })
   })
 
-  
+
 
 
   exports.deleteEditor =  catchAsync(async(req, res, next)=>{
