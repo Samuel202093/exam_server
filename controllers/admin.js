@@ -23,8 +23,6 @@ const signToken = (id)=>{
        }
      
        const result = await knex.select().from('admins').where('email',email)
-
-       console.log(result)
        
        if (!result[0] || !(await bcrypt.compare(password, result[0].password))) {
          return next(new AppError("Incorrect email or password", 401))
