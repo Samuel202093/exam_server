@@ -19,6 +19,7 @@ const {
   deleteByTopic,
   updateBySubject,
   deleteBySubject,
+  getTopicFromSubject,
 } = require("../controllers/exams");
 const { upload } = require("../utils/cloudinary");
 const path = require("path");
@@ -59,6 +60,7 @@ route.post(
 );
 route.post("/question", isLoggedIn, isSuspended, upload.single("image"), createQuestion);
 route.get("/questions", getQuestions);
+route.get('/subject_topic/:subject', isLoggedIn, getTopicFromSubject )
 route.get("/question/:id", getQuestion);
 route.get("/question_subject", QuestionBySubject);
 route.get("/question_type", questionByExamType);

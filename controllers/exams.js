@@ -45,6 +45,16 @@ exports.createTopicSubject = catchAsync(async(req, res, next)=>{
 
 })
 
+exports.getTopicFromSubject = catchAsync(async(req, res, next)=>{
+    const subjectParams = req.params.subject
+    const subjectIdResult = await knex('subjects').where({subject_title: subjectParams})
+    console.log(subjectIdResult)
+    if(subjectIdResult[0]){
+        const result = await knex('topics').where({subject_id: subjectIdResult[0].id})
+        res.status(200).json({data: result})
+    }
+})
+
 
 exports.createQuestion = catchAsync(async(req, res, next)=>{
     if (!req.file) {
