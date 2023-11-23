@@ -20,6 +20,8 @@ const {
   updateBySubject,
   deleteBySubject,
   getTopicFromSubject,
+  examType,
+  getSubject,
 } = require("../controllers/exams");
 const { upload } = require("../utils/cloudinary");
 const path = require("path");
@@ -58,10 +60,18 @@ route.post(
   restrictedTo("admin"),
   createTopicSubject
 );
+
+// route.post(
+//   "/subject/topic",
+//   createTopicSubject
+// );
+
 route.post("/question", isLoggedIn, isSuspended, upload.single("image"), createQuestion);
 route.get("/questions", getQuestions);
 route.get('/subject_topic/:subject',  getTopicFromSubject )
 route.get("/question/:id", getQuestion);
+route.get('/examType', examType)
+route.get('/examType/subject/:examType', getSubject)
 route.get("/question_subject", QuestionBySubject);
 route.get("/question_type", questionByExamType);
 route.get("/question_topic", questionByTopic);

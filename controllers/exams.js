@@ -28,21 +28,62 @@ exports.createExamType = catchAsync(async(req, res, next)=>{
 
 
 exports.createTopicSubject = catchAsync(async(req, res, next)=>{
-    const {subject, topic} = req.body
+    const {subject, topic, examType} = req.body
 
-    if (!subject || !topic) {
+    if (!subject || !topic || !examType) {
         return next(new AppError("please select the required field!", 401))
     }
 
-    const subjectCreated = await knex('subjects').insert({subject_title: subject}, "id")
+    const checkExamType = await knex('exam_type').where({type_of_exam: examType}).first()
+    const checkSubjectExist = await knex('subjects').where({subject_title: subject}).first()
+    const checkTopicExist = await knex('topics').where({topic_title: topic}).first()
 
-    const topicCreated = await knex('topics').insert({topic_title: topic, subject_id: JSON.stringify(subjectCreated[0].id)}, "id")
+    if (checkExamType) {
+      
+        if (!checkSubjectExist && !checkTopicExist) {
+            const subjectCreated = await knex('subjects').insert({subject_title: subject}, "id")
+            
+            const topicCreated = await knex('topics').insert({topic_title: topic, subject_id: JSON.stringify(subjectCreated[0].id)}, "id")
 
-    res.status(201).json({
-        status: "success",
-        data: {subjectCreated, topicCreated}
-    })
+            const subjectExamType = await knex('subject_and_exam_type').insert({exam_id: checkExamType.id, subject_id: JSON.stringify(subjectCreated[0].id)})
 
+            res.status(201).json({
+                status: "success",
+                data: {subjectCreated, topicCreated}
+            })
+        }
+
+        if (checkSubjectExist && checkTopicExist) {
+            const subjectExamType = await knex('subject_and_exam_type').insert({exam_id: checkExamType.id, subject_id: checkSubjectExist.id}, "*")
+
+            res.status(201).json({
+                status: "success",
+                data: {subjectExamType}
+            })
+
+        }
+        
+    }
+
+})
+
+
+exports.examType = catchAsync(async(req, res, next)=>{
+    const result = await knex('exam_type')
+    if (result) {
+        res.status(200).json({data: result})
+    }
+})
+
+
+
+exports.getSubject = catchAsync(async(req, res, next)=>{
+    const checkExamType = await knex('exam_type').where({type_of_exam: req.params.examType}).first()
+    if (checkExamType) {
+        const result = await knex.raw(`SELECT * FROM subject_and_exam_type INNER JOIN exam_type ON subject_and_exam_type.exam_id = exam_type.id INNER JOIN subjects ON subject_and_exam_type.subject_id = subjects.id WHERE exam_id = ${checkExamType.id}`)
+
+        res.status(200).json({data: result.rows})
+    }
 })
 
 exports.getTopicFromSubject = catchAsync(async(req, res, next)=>{
@@ -115,7 +156,7 @@ exports.getQuestions = catchAsync(async(req, res, next)=>{
 
 exports.questionByExamType = catchAsync(async(req, res, next)=>{
 
-    const result = await knex.raw("SELECT type_of_exam AS typeOfExam, COUNT(DISTINCT subject_title) AS No_of_subject, COUNT(question) AS No_of_questions FROM exam_questions INNER JOIN subjects ON exam_questions.subject_id = subjects.id INNER JOIN exam_type ON exam_questions.exam_id = exam_type.id GROUP BY type_of_exam")
+    const result = await knex.raw("SELECT exam_id AS Exam_Id, type_of_exam AS typeOfExam, COUNT(DISTINCT subject_title) AS No_of_subject, COUNT(question) AS No_of_questions FROM exam_questions INNER JOIN subjects ON exam_questions.subject_id = subjects.id INNER JOIN exam_type ON exam_questions.exam_id = exam_type.id GROUP BY type_of_exam, exam_id")
     if (result) {
         res.status(200).json({
             status: "success",
